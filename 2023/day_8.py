@@ -17,7 +17,7 @@ def get_input(day: int) -> str:
     return (
         requests.get(
             f"https://adventofcode.com/2023/day/{day}/input",
-            cookies={"session": os.environ["AOC_SESSION_COOKIE"]},
+            cookies={"session": os.environ["AOC_SESSION_TOKEN"]},
         )
         .text.rstrip("\n")
         .split("\n")
@@ -77,10 +77,7 @@ directions = data[0]
 nodes = sorted(data[2:])
 dirs = directions.replace("L", "0").replace("R", "1")
 nodes = {
-    node.split(" = ")[0]: node.split(" = ")[1]
-    .lstrip("(")
-    .rstrip(")")
-    .split(", ")
+    node.split(" = ")[0]: node.split(" = ")[1].lstrip("(").rstrip(")").split(", ")
     for node in nodes
 }
 # %%
@@ -96,7 +93,7 @@ while node != "ZZZ":
 
 steps
 # %%
-data = example_3
+data = input
 
 directions = data[0]
 nodes = sorted(data[2:], key=lambda x: x[2])
@@ -113,16 +110,19 @@ dirs, nodes
 # %%
 positions = [node for node in nodes.keys() if node.endswith("A")]
 steps = 0
-for dir in dirs:
-    while not all([pos.endswith("Z") for pos in positions]):
+max_steps = 1e9
+while not all([pos.endswith("Z") for pos in positions]) and steps <= max_steps:
+    for dir in dirs:
         positions = [nodes[pos][dir] for pos in positions]
         steps += 1
         if steps % 1e6 == 0:
             print(steps, positions)
-        if all([pos.endswith("Z") for pos in positions]) == "ZZZ":
+        if all([pos.endswith("Z") for pos in positions]):
             break
 
-# steps
+steps
+# %%
+all([pos.endswith("Z") for pos in positions])
 # %%
 # total_steps = 1e7
 # first_positions = [node for node in nodes.keys() if node.endswith("A")]
